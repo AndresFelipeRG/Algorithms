@@ -4,7 +4,7 @@ struct Node
 	struct Node *left;
 	struct Node *right;
 };
-*/
+
 // function should return the root of the new binary tree formed
 Node * recursive(vector<int> * pre, vector <char> * preLN){
     if((*pre).size() == 0 && (*preLN).size() == 0){
