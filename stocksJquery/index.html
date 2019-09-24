@@ -1,0 +1,209 @@
+
+<!DOCTYPE html>
+<html>
+
+   <head>
+      <title>Finance</title>
+      <script type = "text/javascript" src = "https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+      <script>
+        var set = new Set();
+        function addStock(){
+            let name = $("#stock").val(); 
+            if(name.length > 0){
+                let item = "<li" +" id=" +name +" >"+name+"</li>";
+                $("#stocks").append(item);
+                set.add(name);
+            }
+            $(document).ready(function (){
+                 $("ul#stocks li").hover(function(){highlightStock(this, "red");}, function (){highlightStock(this, "black")});
+            });
+        }
+        function deleteStockSet(stockName){
+            if(stockName.length > 0){
+                set.delete(stockName);
+
+            }
+        }
+        function deleteStock(){
+            let name  = $("#delName").val();
+            if(name.length > 0){
+                
+                $("ul#stocks li").filter(function(){
+                        return $("#"+this.id).text() === name ;
+                        }).remove();
+                deleteStockSet(name);
+            }
+        }
+        let createUrl = function(symbols){
+            if(set.size > 0){
+                let stocks = [...set.values()].join(",");
+                return `https://financialmodelingprep.com/api/company/price/${stocks}?datatype=json`;
+            }
+            return "";
+        }
+        function getData(){
+            let url = createUrl("FB");
+            $.ajax({
+                url: url,
+                type: "GET",
+                crossDomain: true,
+                success: function (response){
+                    let responseP = JSON.parse(response);
+                    let table = $("#data");
+                    let head = $("<thead></thead>");
+                    let row = $("<tr></tr>");
+                    row.append($("<th></th>").html("Symbol"));
+                    row.append($("<th></th>").html("Price(USD)"));
+                    head.append(row);
+                    table.append(head);
+                    let tbody = $("<tbody></tbody>");
+                    const keys = Object.keys(responseP);
+                    for(const key of keys){
+                        let row = $("<tr></tr>");
+                        row.append($("<td></td>").html(key));
+                        row.append($("<td></td>").html(responseP[key]["price"]));
+                        tbody.append(row);
+                    }
+                    table.append(tbody);
+                },
+                error: function(xhr, status){
+                    alert("Error!")
+                }
+            });
+        }
+
+       
+        function highlightStock(li, color){
+                
+                li.style.color = color;
+        }
+        $(document).ready(function() {
+
+            $("#addStock").on("click", addStock);
+            $("#deleteStock").on("click", deleteStock);
+            $("#createPortfolio").on("click", getData);
+            
+        });
+      </script>
+      <style>
+          body{
+              background: white;
+              font-family: Helvetica;
+              padding: 20px;
+          }
+          #myForm {
+              
+              background: white;
+              color: black;
+              text-align: center;
+          }
+          #myTable {
+              
+              background: white;
+              color: black;
+              text-align: center;
+              
+          }
+          div {
+              text-align: center;
+              display: block;
+              position: relative;
+              margin: 20px;
+          }
+          div#myTable {
+              
+              display: block;
+              position: relative;
+              
+          }
+          div#portfolio {
+              width: 250px;
+              display: block;
+              position: relative;
+              left: 35%;
+              border: 0.05em solid black;
+          }
+          div#stockData {
+              width: 400px;
+              display: block;
+              text-algin: center;
+              left: 25%;
+          }
+          li {
+
+              text-align: center;
+          }
+          ul {
+              display: block;
+              position: relative;
+              text-align: center;
+              font-size: 20px;
+          }
+          button {
+              display: inline;
+              border: none;
+              background: black;
+              color: white;
+              font-size: 20px;
+              box-sizing: border-box;
+              position: relative;
+              text-align: center;
+              border-radius: 5px;
+              
+          }
+          table {
+              position: relative;
+              font-size: 20px;
+              text-align: center;
+              left: 25%;
+          }
+          span {
+              font-size: 30px;
+              display: block;
+          }
+          label {
+              display: inline;
+              margin: 10px;
+              font-size: 20px;
+              solid: 0.05em solid black;
+          }
+          input {
+              margin: 10px;
+          }
+          
+      </style>
+   </head>
+	
+   <body>
+      <div id = "myForm">
+         <span> Create a portfolio</span>
+         <label id="labelStock" for="stock">Enter the valid symbol of the stock</label>
+         <input type="text" id="stock"/>
+         <div id = "buttons">
+         <button id="addStock">Add Stock to Portfolio</button>
+         <button id="createPortfolio">Display Stock Data</button>
+         </div>
+      </div>
+      <div id = "myTable">
+       <span> List of stocks in the portfolio<span>
+        <div id="portfolio">
+            <ul id="stocks">
+            </ul>
+        </div>
+        <div id="delete">
+            <label id= "labelDel" for="delName">Delete stock symbol:</label>
+            <input type="text" id="delName"/>
+            <button id="deleteStock">Delete </button>
+        </div>
+        <div id="stockData">
+            <span>Stock Data</span>
+            <div id="test">
+            <table id="data"></table>
+            </div>
+        </div>
+      </div>
+      
+
+   </body>
+</html>
