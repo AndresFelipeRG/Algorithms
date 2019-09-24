@@ -10,7 +10,7 @@
         var set = new Set();
         function addStock(){
             let name = $("#stock").val(); 
-            if(name.length > 0){
+            if(name.length > 0 && !set.has(name)){
                 let item = "<li" +" id=" +name +" >"+name+"</li>";
                 $("#stocks").append(item);
                 set.add(name);
@@ -51,8 +51,10 @@
                 success: function (response){
                     let responseP = JSON.parse(response);
                     let table = $("#data");
+                    
                     let head = $("<thead></thead>");
                     let row = $("<tr></tr>");
+                    table.empty();
                     row.append($("<th></th>").html("Symbol"));
                     row.append($("<th></th>").html("Price(USD)"));
                     head.append(row);
