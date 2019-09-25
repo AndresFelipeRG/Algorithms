@@ -28,7 +28,7 @@ function sumFibs(num) {
                 }, 0);
   
   console.log(sum);
-  return arr;
+  return sum;
 }
 sumFibs(1);
 sumFibs(4);
